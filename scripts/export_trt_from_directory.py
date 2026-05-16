@@ -2,6 +2,7 @@ import os
 import torch
 import time
 from trt_utilities import Engine
+from .. import IMAGE_DIM_MIN, IMAGE_DIM_OPT, IMAGE_DIM_MAX
 
 def export_trt(trt_path=None, onnx_path=None, use_fp16=True):
     option = input("Choose an option:\n1. Convert a single ONNX file\n2. Convert all ONNX files in a directory\nEnter your choice (1 or 2): ")
@@ -44,9 +45,13 @@ def export_trt(trt_path=None, onnx_path=None, use_fp16=True):
         onnx_path,
         use_fp16,
         enable_preview=True,
-        input_profile=[
-            {"input": [(1,3,256,256), (1,3,512,512), (1,3,1280,1280)]}, # any sizes from 256x256 to 1280x1280
-        ],
+        input_profile = [
+            {"input": [
+                (1, 3, IMAGE_DIM_MIN, IMAGE_DIM_MIN),
+                (1, 3, IMAGE_DIM_OPT, IMAGE_DIM_OPT),
+                (1, 3, IMAGE_DIM_MAX, IMAGE_DIM_MAX),
+            ]}
+        ]
         )
 
         e = time.time()

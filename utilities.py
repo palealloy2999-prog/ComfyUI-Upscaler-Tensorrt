@@ -100,6 +100,9 @@ def download_file(url, save_path):
             size = file.write(data)
             progress_bar.update(size)
 
+def round_to_16(x):
+    return int((x + 15) // 16 * 16)
+
 def get_final_resolutions(width, height, resize_to):
     final_width = None
     final_height = None
@@ -127,10 +130,11 @@ def get_final_resolutions(width, height, resize_to):
             final_width = width*resize_factor
             final_height = height*resize_factor
 
+    final_width = round_to_16(final_width)
+    final_height = round_to_16(final_height)
     if aspect_ratio == 1.0:
         final_width = final_height
-
-    if aspect_ratio < 1.0 and resize_to not in ("none", "1x", "1.5x", "2x", "2.5x", "3x", "3.5x", "4x", "5x", "6x", "7x", "8x", "9x", "10x"):
+    if aspect_ratio < 1.0 and resize_to not in ("none", "0.5x", "1.2x", "1.5x", "1.6x", "1.8x", "2x", "3x"):
         temp = final_width
         final_width = final_height
         final_height = temp

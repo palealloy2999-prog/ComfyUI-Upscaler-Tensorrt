@@ -12,9 +12,9 @@ import json # <--- Import json module
 
 logger = ColoredLogger("ComfyUI-Upscaler-Tensorrt")
 
-IMAGE_DIM_MIN = 256
-IMAGE_DIM_OPT = 512
-IMAGE_DIM_MAX = 1280
+IMAGE_DIM_MIN = 408
+IMAGE_DIM_OPT = 1024
+IMAGE_DIM_MAX = 1344
 
 # --- Function to load configuration ---
 def load_node_config(config_filename="load_upscaler_config.json"):
@@ -61,7 +61,7 @@ class UpscalerTensorrt:
             "required": {
                 "images": ("IMAGE", {"tooltip": f"Images to be upscaled. Resolution must be between {IMAGE_DIM_MIN} and {IMAGE_DIM_MAX} px"}),
                 "upscaler_trt_model": ("UPSCALER_TRT_MODEL", {"tooltip": "Tensorrt model built and loaded"}),
-                "resize_to": (["none", "custom", "HD", "FHD", "2k", "4k", "1x", "1.5x", "2x", "2.5x", "3x", "3.5x", "4x", "5x", "6x", "7x", "8x", "9x", "10x"], {"tooltip": "Resize the upscaled image to fixed resolutions, optional"}),
+                "resize_to": (["none", "HD", "FHD", "2k", "4k", "0.5x", "1.2x", "1.5x", "1.6x", "1.8x", "2x", "3x"], {"tooltip": "Resize the upscaled image to fixed resolutions, optional"}),
                 "resize_width": ("INT", {"default": 1024, "min": 1, "max": 8192}),
                 "resize_height": ("INT", {"default": 1024, "min": 1, "max": 8192}),
             }
@@ -90,6 +90,8 @@ class UpscalerTensorrt:
         else:
             final_width, final_height = get_final_resolutions(W, H, resize_to)
 
+        final_width = int(final_width)
+        final_height = int(final_height)
         logger.info(f"Upscaling {B} images from H:{H}, W:{W} to H:{H*4}, W:{W*4} | Final resolution: H:{final_height}, W:{final_width} | resize_to: {resize_to}")
 
         shape_dict = {
